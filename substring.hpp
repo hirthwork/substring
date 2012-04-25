@@ -44,8 +44,9 @@ namespace substring {
             size_type n = npos)
         {
             const size_type size = substring.size();
-            assert_type::out_of_range_assert(assert::make_bind(std::bind1st(
-                std::less_equal<size_type>(), pos), size), "pos > size");
+            assert_type::out_of_range_assert(assert::bind(std::bind1st(
+                std::less_equal<size_type>(), pos), assert::bind(size)),
+                "pos > size");
             start = substring.begin() + pos;
             length = std::min(n, size - pos);
         }
@@ -102,7 +103,7 @@ namespace substring {
             return const_reverse_iterator(begin());
         }
 
-        size_type size() throw() {
+        size_type size() const throw() {
             return length;
         }
 
@@ -115,13 +116,14 @@ namespace substring {
         }
 
         const_reference operator [](size_type pos) const throw() {
-            return pos < length ? start[pos] : null;
+            return start[pos];
         }
 
-        const_reference at(size_type pos) {
-            assert_type::out_of_range_assert(assert::make_bind_predicate(
-                std::bind1st(std::less_equal<size_type>(), pos),
-                assert::make_bind_member(this, size)), "pos > size");
+        const_reference at(size_type pos) const {
+            assert_type::out_of_range_assert(assert::bind(
+                std::bind1st(std::less<size_type>(), pos),
+                assert::bind(this, &basic_substring::size)),
+                "pos >= size");
             return start[pos];
         }
 
@@ -151,11 +153,9 @@ namespace substring {
             return start;
         }
 
-        basic_substring substr(size_type pos, size_type n = npos) const throw()
+        basic_substring substr(size_type pos, size_type n = npos) const
         {
-            assert_type::out_of_range_assert(assert::make_bind(std::bind1st(
-                std::less_equal<size_type>(), pos), length), "pos > size");
-            return basic_substring(begin() + pos, std::min(n, length - pos));
+            return basic_substring(*this, pos, n);
         }
 
         template <class Allocator>
@@ -181,7 +181,6 @@ namespace substring {
     private:
         const_pointer start;
         size_type length;
-        static const charT null = charT();
     };
 
     template <class charT, class traits>
