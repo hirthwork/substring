@@ -20,7 +20,13 @@
 #ifndef __SUBSTRING_HPP_2012_04_23__
 #define __SUBSTRING_HPP_2012_04_23__
 
+// include swap(..., ...)
+#if __cplus_plus < 201103L
 #include <algorithm>
+#else
+#include <utility>
+#endif
+
 #include <cstddef>
 #include <functional>
 #include <iterator>
@@ -28,13 +34,13 @@
 #include <ostream>
 #include <string>
 
-#include <assert/emptyassert.hpp>
+#include <assert/empty.hpp>
 #include <assert/noexcept.hpp>
-#include <assert/nullarypredicates.hpp>
+#include <assert/predicates.hpp>
 
 namespace substring {
     template <class charT, class traits = std::char_traits<charT>,
-        class Assert = assert::empty_assert>
+        class Assert = assert::empty>
     class basic_substring {
     public:
         typedef traits traits_type;
@@ -202,13 +208,6 @@ namespace substring {
         size_type length;
     };
 
-    template <class charT, class traits>
-    static void swap(basic_substring<charT, traits>& lhs,
-        basic_substring<charT, traits>& rhs)
-    {
-        lhs.swap(rhs);
-    }
-
     typedef basic_substring<char> substring;
     typedef basic_substring<wchar_t> wsubstring;
 
@@ -236,6 +235,15 @@ namespace substring {
         std::basic_ostream<charT, traits>& stream,
         basic_substring<charT, traits, assert> substring) {
         return stream.write(substring.data(), substring.size());
+    }
+}
+
+namespace std {
+    template <class charT, class traits, class assert>
+    static void swap(substring::basic_substring<charT, traits, assert>& lhs,
+        substring::basic_substring<charT, traits, assert>& rhs)
+    {
+        lhs.swap(rhs);
     }
 }
 
