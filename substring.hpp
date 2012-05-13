@@ -69,7 +69,7 @@ namespace substring {
             size_type n = npos)
         {
             const size_type size = substring.size();
-            assert_type::out_of_range_assert(assert::bind(std::bind1st(
+            assert_type::out_of_range(assert::bind(std::bind1st(
                 std::less_equal<size_type>(), pos), assert::bind(size)),
                 "pos > size");
             start = substring.begin() + pos;
@@ -145,7 +145,7 @@ namespace substring {
         }
 
         const_reference at(size_type pos) const {
-            assert_type::out_of_range_assert(assert::bind(
+            assert_type::out_of_range(assert::bind(
                 std::bind1st(std::less<size_type>(), pos),
                 assert::bind(this, &basic_substring::size)),
                 "pos >= size");
